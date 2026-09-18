@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>นกกระจอกคู่ · Jade Pairs</title>
+<meta name="description" content="เกมจับคู่กระเบื้องนกกระจอก จับคู่ที่เก็บ 4 ช่อง เล่นออฟไลน์ได้ ติดตั้งเป็นแอปได้">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f3b30">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Jade Pairs">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <button id="btn-menu" class="icon-btn" aria-label="เมนู" title="เมนู">☰</button>
+
+      <div class="stat-cluster">
+        <div class="stat">
+          <span class="stat-label">ด่าน</span>
+          <span class="stat-value" id="stat-level">1</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">เหลือ</span>
+          <span class="stat-value" id="stat-remaining">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">เวลา</span>
+          <span class="stat-value" id="stat-time">00:00</span>
+        </div>
+      </div>
+
+      <button id="btn-sound" class="icon-btn" aria-label="เปิด/ปิดเสียง" title="เปิด/ปิดเสียง">🔊</button>
+      <button id="btn-restart" class="icon-btn" aria-label="เริ่มด่านใหม่" title="เริ่มด่านใหม่">⟲</button>
+    </header>
+
+    <!-- Tray: click a tile to send it here (max 4 slots); two of a kind clear -->
+    <div class="tray-bar" aria-label="ที่เก็บกระเบื้อง สูงสุด 4 ช่อง">
+      <div class="tray-inner" id="tray-inner"></div>
+    </div>
+
+    <!-- Message banner -->
+    <div class="banner" id="banner"></div>
+
+    <!-- Board -->
+    <main class="board-wrap">
+      <div class="board" id="board" tabindex="0" aria-label="กระดานนกกระจอก ใช้ลูกศรเลื่อน กด Enter เพื่อเลือก"></div>
+    </main>
+
+    <!-- Bottom toolbar -->
+    <footer class="toolbar">
+      <button class="tool-btn" id="btn-shuffle" title="สลับลายกระเบื้องที่เหลือบนกระดาน">
+        <span class="tool-icon">⤮</span>
+        <span class="tool-label">สลับ</span>
+        <span class="tool-badge" id="badge-shuffle">3</span>
+      </button>
+      <button class="tool-btn" id="btn-hint" title="คำใบ้">
+        <span class="tool-icon">💡</span>
+        <span class="tool-label">ใบ้</span>
+        <span class="tool-badge" id="badge-hint">3</span>
+      </button>
+      <button class="tool-btn" id="btn-undo" title="ดึงกระเบื้องล่าสุดกลับขึ้นกระดาน">
+        <span class="tool-icon">↩</span>
+        <span class="tool-label">ย้อนกลับ</span>
+        <span class="tool-badge" id="badge-undo">3</span>
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- Start / title screen -->
+  <div class="overlay" id="screen-start">
+    <div class="panel start-panel">
+      <div class="start-glyphs">🀄 🀅 🀆</div>
+      <h1 class="start-title">Jade Pairs</h1>
+      <p class="start-sub">นกกระจอกจับคู่</p>
+      <button class="panel-btn primary" id="start-continue" style="display:none;">
+        เล่นต่อ (ด่าน <span id="start-continue-level"></span>)
+      </button>
+      <button class="panel-btn" id="start-new">เริ่มเกมใหม่</button>
+      <div class="panel-hint">
+        คีย์ลัด: ลูกศร ย้าย • Enter/Space เลือก • U ย้อนกลับ • S สลับ • H ใบ้
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay: pause / menu -->
+  <div class="overlay hidden" id="overlay-menu">
+    <div class="panel">
+      <h2>เมนู</h2>
+      <button class="panel-btn" id="menu-resume">เล่นต่อ</button>
+      <button class="panel-btn" id="menu-restart">เริ่มด่านนี้ใหม่</button>
+      <button class="panel-btn" id="menu-newgame">เริ่มเกมใหม่ (ด่าน 1)</button>
+      <button class="panel-btn" id="menu-install" style="display:none;">📲 ติดตั้งเป็นแอป</button>
+      <div class="panel-hint">
+        คีย์ลัด: ลูกศร ย้าย • Enter/Space เลือก • U ย้อนกลับ • S สลับ • H ใบ้
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay: level clear -->
+  <div class="overlay hidden" id="overlay-clear">
+    <div class="panel">
+      <h2>ผ่านด่าน!</h2>
+      <p id="clear-stats" class="panel-text"></p>
+      <button class="panel-btn primary" id="clear-next">ด่านต่อไป</button>
+    </div>
+  </div>
+
+  <!-- Overlay: tray full without a match — game over -->
+  <div class="overlay hidden" id="overlay-gameover">
+    <div class="panel">
+      <h2>เกมจบ!</h2>
+      <p id="gameover-stats" class="panel-text"></p>
+      <button class="panel-btn primary" id="gameover-restart">ลองใหม่ด่านนี้</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
