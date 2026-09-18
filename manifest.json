@@ -1,0 +1,20 @@
+{
+  "name": "Jade Pairs — นกกระจอกจับคู่",
+  "short_name": "Jade Pairs",
+  "description": "เกมจับคู่กระเบื้องนกกระจอก จับคู่ที่เก็บ 4 ช่อง เล่นออฟไลน์ได้",
+  "id": "/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b2b23",
+  "theme_color": "#0f3b30",
+  "lang": "th",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
